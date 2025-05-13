@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -19,6 +20,6 @@ public class PostDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UserDto user;
-    private List<UserDto> liked;
+    private Set<UserDto> liked;
     private List<CommentDto> comments = new ArrayList<>();
 }

@@ -20,7 +20,7 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
         if (user == null){
-            throw new UsernameNotFoundException("not found with username: "+username);
+            throw new UsernameNotFoundException("tài khoản hoặc mật khẩu không chính xác");
 
         }
         List<GrantedAuthority> authorities = new ArrayList<>();

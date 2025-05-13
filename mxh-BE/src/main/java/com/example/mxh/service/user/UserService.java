@@ -50,7 +50,7 @@ public class UserService implements IUserService {
             return userRepository.findById(id).get();
 
         }
-        throw new UserException("not found user by id: "+id);
+        throw new UserException("user not found");
     }
 
     @Override

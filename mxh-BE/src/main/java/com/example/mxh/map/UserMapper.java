@@ -7,7 +7,9 @@ import com.example.mxh.model.user.UserDto;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class UserMapper {
     public static User map(FormCreateUser form) throws ParseException {
@@ -51,6 +53,13 @@ public class UserMapper {
 
     public static List<UserDto> map(List<User> users){
         List<UserDto> userDtos = new ArrayList<>();
+        for (User user : users) {
+            userDtos.add(map(user));
+        }
+        return userDtos;
+    }
+    public static Set<UserDto> map(Set<User> users){
+        Set<UserDto> userDtos = new HashSet<>();
         for (User user : users) {
             userDtos.add(map(user));
         }

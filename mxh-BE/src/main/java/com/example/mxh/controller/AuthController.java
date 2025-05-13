@@ -7,6 +7,7 @@ import com.example.mxh.form.LoignRequest;
 import com.example.mxh.repository.UserRepository;
 import com.example.mxh.response.AuthResponse;
 import com.example.mxh.service.user.IUserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +25,7 @@ public class AuthController {
     private CustomUserDetailService customUserDetailService;
     private PasswordEncoder  passwordEncoder;
     @PostMapping("/register")
-    public AuthResponse create(@RequestBody FormCreateUser form) throws Exception {
+    public AuthResponse create(@RequestBody @Valid FormCreateUser form) throws Exception {
         var response = userService.create(form);
         var user = userRepository.findByUsername(form.getUsername());
         if (user == null){
@@ -44,10 +45,10 @@ public class AuthController {
     private Authentication authenticate(String username, String password) {
         UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
         if (userDetails == null){
-            throw new BadCredentialsException("invalid username");
+            throw new BadCredentialsException("tài khoản hoặc mật khẩu không chính xác");
         }
         if (!passwordEncoder.matches(password,userDetails.getPassword())){
-            throw new BadCredentialsException("password not matched");
+            throw new BadCredentialsException("tài khoản hoặc mật khẩu không chính xác");
         }
         return new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
     }

@@ -10,7 +10,10 @@ import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 @Setter
 @Getter
 @Entity
@@ -42,7 +45,7 @@ public class Post {
     private User user;
 
     @ManyToMany
-    private List<User> like = new ArrayList<>();
+    private Set<User> like = new HashSet<>();
 
     @OneToMany
     private List<Comment> comments = new ArrayList<>();

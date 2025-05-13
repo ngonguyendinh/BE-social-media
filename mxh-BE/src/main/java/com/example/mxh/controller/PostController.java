@@ -65,33 +65,6 @@ public class PostController {
     }
     @PutMapping("/like/{Pid}")
     public ResponseEntity<String> likePostHandler(@PathVariable("Pid") int postId,@RequestHeader("Authorization") String jwt) throws UserException {
-//        User user = iUserService.findUserByJwt(jwt);
-//        Post post = postService.findById(postId);
-//
-//
-//        boolean wasLiked = post.getLike().stream().anyMatch(u -> u.getId() == user.getId());
-//
-//
-//        post = postService.likePost(postId, user.getId());
-//
-//
-//        boolean isNowLiked = post.getLike().stream().anyMatch(u -> u.getId() == user.getId());
-//
-//
-//        if (!wasLiked && isNowLiked) {
-//            // Only send notification if user is liking someone else's post
-//            if (post.getUser().getId() != user.getId()) {
-//                String message= (user.getFirstName() + " " + user.getLastName() + " đã thích bài viết của bạn  ");
-//                Notification notification =notificationService.createNotificationLikePost(post.getUser(), user,message);
-//                messagingTemplate.convertAndSendToUser(
-//                        post.getUser().getUsername(),
-//                        "/notification",notification
-//                );
-//            }
-//            return ResponseEntity.ok("Bài viết đã được like!");
-//        } else {
-//            return ResponseEntity.ok("Bài viết đã được unlike!");
-//        }
         try {
             User user = iUserService.findUserByJwt(jwt);
             Post post = postService.findById(postId);
