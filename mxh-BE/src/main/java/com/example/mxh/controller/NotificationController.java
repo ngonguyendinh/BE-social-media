@@ -53,6 +53,7 @@ import com.example.mxh.model.user.User;
 import com.example.mxh.service.notification.INotificationService;
 import com.example.mxh.service.user.IUserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -67,6 +68,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/notifications")
 @AllArgsConstructor
+@Slf4j
 public class NotificationController {
 
     private final INotificationService notificationService;
@@ -108,8 +110,8 @@ public class NotificationController {
     }
 // read notification
     @PutMapping("/read/{id}")
-    public ResponseEntity<NotificationDto> readNotification(@PathVariable("id") Long id) {
-        NotificationDto dto = NotificationMapper.map(notificationService.readNotification(id));
+    public ResponseEntity<NotificationRecipientDto> readNotification(@PathVariable("id") Long id) {
+        NotificationRecipientDto dto = NotificationRecipientMapper.map(notificationService.readNotification(id));
         return ResponseEntity.ok(dto);
     }
 // read all notification
@@ -120,21 +122,17 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 // create notification and send real-time notification
-    @PostMapping
-    public ResponseEntity<NotificationDto> createNotification(@RequestBody NotificationDto notificationDto) {
+@PostMapping
+public ResponseEntity<NotificationDto> createNotification(@RequestBody NotificationDto notificationDto) {
+    try {
+        log.debug("Creating notification: {}", notificationDto);
         Notification notification = notificationService.createNotification(NotificationMapper.map(notificationDto));
-
-        // Gửi thông báo real-time đến người nhận
-        for (Long recipientId : notificationDto.getRecipientIds()) {
-            messagingTemplate.convertAndSendToUser(
-                    recipientId.toString(),
-                    "/notifications",
-                    NotificationMapper.map(notification)
-            );
-        }
-
         return ResponseEntity.status(HttpStatus.CREATED).body(NotificationMapper.map(notification));
+    } catch (Exception e) {
+        log.error("Error creating notification: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
+}
 // delete notification
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNotification(@PathVariable("id") Long id) {

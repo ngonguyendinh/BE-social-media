@@ -2,8 +2,10 @@ package com.example.mxh.controller;
 
 import com.example.mxh.exception.UserException;
 import com.example.mxh.form.FormCreatePost;
+import com.example.mxh.map.NotificationMapper;
 import com.example.mxh.map.PostMapper;
 import com.example.mxh.model.notification.Notification;
+import com.example.mxh.model.notification.NotificationDto;
 import com.example.mxh.model.post.Post;
 import com.example.mxh.model.post.PostDto;
 import com.example.mxh.model.user.User;
@@ -79,10 +81,11 @@ public class PostController {
                     String message = user.getFirstName() + " " + user.getLastName() + " đã thích bài viết của bạn";
                     try {
                         Notification notification = notificationService.createNotificationLikePost(post.getUser(), user, message);
+                        NotificationDto notificationDto = NotificationMapper.map(notification);
                         messagingTemplate.convertAndSendToUser(
                                 post.getUser().getUsername(),
                                 "/notification",
-                                notification
+                                notificationDto
                         );
                     } catch (Exception e) {
                         // Log lỗi nhưng vẫn tiếp tục xử lý

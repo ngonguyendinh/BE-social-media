@@ -69,25 +69,27 @@ public class UserService implements IUserService {
 
     @Override
     public UserDto followUser(int id, int idFollower) throws UserException {
-        User user1 = userRepository.findById(id).get();
-        User user2 = userRepository.findById(idFollower).get();
+        User currentUser = userRepository.findById(id).get();
+        User targetUser = userRepository.findById(idFollower).get();
 
 
-        if(user1.getFollower().contains(user2.getId())){
-            user1.getFollower().remove(user2.getId());
-            user1.getFollowing().remove(user2.getId());
+        if (currentUser.getFollowing().contains(targetUser.getId())) {
 
-            user2.getFollowing().remove(user1.getId());
+            currentUser.getFollowing().remove(Integer.valueOf(targetUser.getId()));
+            targetUser.getFollower().remove(Integer.valueOf(currentUser.getId()));
         } else {
-            user1.getFollowing().add(user2.getId());
-            user2.getFollower().add(user1.getId());
+
+            currentUser.getFollowing().add(targetUser.getId());
+            targetUser.getFollower().add(currentUser.getId());
         }
 
-        userRepository.save(user1);
-        userRepository.save(user2);
 
-        return UserMapper.map(user2);
+        userRepository.save(currentUser);
+        userRepository.save(targetUser);
+
+        return UserMapper.map(targetUser);
     }
+
 
     @Override
     public Set<User> findUsersByIds(Set<Integer> following) {

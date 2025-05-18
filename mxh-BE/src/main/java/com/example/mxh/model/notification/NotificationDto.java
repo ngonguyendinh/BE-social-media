@@ -1,6 +1,7 @@
 package com.example.mxh.model.notification;
 
 
+import com.example.mxh.model.user.UserDto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,7 +11,7 @@ import java.util.List;
 public class NotificationDto {
     private Long id;
     private String notification;
-    private Boolean isRead;
     private LocalDateTime receivedAt;
+    private UserDto sender;
     private List<Long> recipientIds;
 }

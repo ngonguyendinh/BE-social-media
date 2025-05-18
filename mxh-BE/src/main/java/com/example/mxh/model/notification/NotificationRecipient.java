@@ -1,6 +1,7 @@
 package com.example.mxh.model.notification;
 
 import com.example.mxh.model.user.User;
+import com.example.mxh.model.user.UserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

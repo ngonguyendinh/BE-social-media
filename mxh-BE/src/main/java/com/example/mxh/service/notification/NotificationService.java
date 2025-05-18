@@ -179,12 +179,12 @@ public class NotificationService implements INotificationService {
 
     @Override
     public List<NotificationRecipient> getNotificationsForUser(int userId) {
-        return notificationRecipientRepository.findByRecipientIdAndIsReadFalse(userId);
+        return notificationRecipientRepository.findByRecipientId(userId);
     }
 
     @Override
     public NotificationRecipient readNotification(Long id) {
-        NotificationRecipient notificationRecipient = notificationRecipientRepository.findById(id)
+        NotificationRecipient notificationRecipient = notificationRecipientRepository.findByNotificationId(id)
                 .orElseThrow(() -> new RuntimeException("Notification not found with id: " + id));
         notificationRecipient.setIsRead(true);
         return notificationRecipientRepository.save(notificationRecipient);

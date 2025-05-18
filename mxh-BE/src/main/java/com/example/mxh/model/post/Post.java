@@ -2,6 +2,9 @@ package com.example.mxh.model.post;
 
 import com.example.mxh.model.comment.Comment;
 import com.example.mxh.model.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -42,6 +45,7 @@ public class Post {
     private LocalDateTime updatedAt;
 
     @ManyToOne
+    @JsonIgnore
     private User user;
 
     @ManyToMany

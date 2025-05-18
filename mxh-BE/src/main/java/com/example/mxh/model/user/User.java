@@ -1,6 +1,10 @@
 package com.example.mxh.model.user;
 
+import com.example.mxh.model.notification.Notification;
 import com.example.mxh.model.post.Post;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import lombok.Data;
@@ -60,9 +64,12 @@ public class User {
     @Column(name = "following")
     private Set<Integer> following = new HashSet<>() ;
 
+    @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
     @OneToMany(mappedBy = "user")
     List<Post> posts;
+
+
 
     public LocalDate setNgaySinh(String ngaySinh) throws ParseException {
         DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("yyyy-MM-dd");
