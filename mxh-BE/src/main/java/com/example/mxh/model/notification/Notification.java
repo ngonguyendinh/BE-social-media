@@ -1,5 +1,6 @@
 package com.example.mxh.model.notification;
 
+import com.example.mxh.model.post.Post;
 import com.example.mxh.model.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -20,7 +21,8 @@ public class Notification {
     @CreationTimestamp
     private LocalDateTime createdAt;
     private String type;
-
+    @ManyToOne
+    private Post newPost;
     @ManyToOne
     private User user;
 }

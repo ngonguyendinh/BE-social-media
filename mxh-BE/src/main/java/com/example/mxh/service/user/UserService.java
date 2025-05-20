@@ -102,6 +102,8 @@ public class UserService implements IUserService {
         return UserMapper.map(userRepository.searchUser(keySearch));
     }
 
+
+
     @Override
     public User findUserByJwt(String jwt) throws UserException {
         String username = JwtProvider.getUsernameFromToken(jwt);

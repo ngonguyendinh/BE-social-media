@@ -110,8 +110,9 @@ public class NotificationController {
     }
 // read notification
     @PutMapping("/read/{id}")
-    public ResponseEntity<NotificationRecipientDto> readNotification(@PathVariable("id") Long id) {
-        NotificationRecipientDto dto = NotificationRecipientMapper.map(notificationService.readNotification(id));
+    public ResponseEntity<NotificationRecipientDto> readNotification(@PathVariable("id") Long id, @RequestHeader("Authorization") String jwt) throws UserException {
+        User user = userService.findUserByJwt(jwt);
+        NotificationRecipientDto dto = NotificationRecipientMapper.map(notificationService.readNotification(id, (long) user.getId()));
         return ResponseEntity.ok(dto);
     }
 // read all notification

@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface NotificationRecipientRepository extends JpaRepository<NotificationRecipient, Long> {
     List<NotificationRecipient> findByRecipientId(int recipientId);
     Optional<NotificationRecipient> findByNotificationId(Long id);
+    Optional<NotificationRecipient> findByNotificationIdAndRecipientId(Long id, Long recipientId);
 
     Page<NotificationRecipient> findByRecipientId(Long recipientId, Pageable pageable);
 

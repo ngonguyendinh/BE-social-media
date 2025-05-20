@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -58,5 +59,11 @@ public class UserController {
     public UserDto getUserFromToken(@RequestHeader("Authorization") String jwt) throws UserException {
 //        System.out.println("jwt--------"+jwt);
         return UserMapper.map(iUserService.findUserByJwt(jwt));
+    }
+    @GetMapping("/followers")
+    public Set<UserDto> getFollowers(@RequestHeader("Authorization") String jwt) throws UserException {
+        User user = iUserService.findUserByJwt(jwt);
+
+        return UserMapper.map(iUserService.findUsersByIds(user.getFollower()));
     }
 }

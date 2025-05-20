@@ -117,11 +117,15 @@ package com.example.mxh.service.post;
 import com.example.mxh.exception.UserException;
 import com.example.mxh.form.FormCreatePost;
 import com.example.mxh.map.CommentMapper;
+import com.example.mxh.map.NotificationRecipientMapper;
 import com.example.mxh.map.PostMapper;
 import com.example.mxh.model.notification.Notification;
+import com.example.mxh.model.notification.NotificationRecipient;
+import com.example.mxh.model.notification.NotificationRecipientDto;
 import com.example.mxh.model.post.Post;
 import com.example.mxh.model.post.PostDto;
 import com.example.mxh.model.user.User;
+import com.example.mxh.repository.NotificationRecipientRepository;
 import com.example.mxh.repository.NotificationRepository;
 import com.example.mxh.repository.PostRepository;
 import com.example.mxh.repository.UserRepository;
@@ -147,7 +151,7 @@ public class PostService implements IPostService{
     private INotificationService notificationService;
     private NotificationRepository notificationRepository;
     private SimpMessagingTemplate messagingTemplate;
-
+    private NotificationRecipientRepository notificationRecipientRepository;
     @Override
     public Post createPost(FormCreatePost form, int idUser) throws UserException {
         User user = userService.findById(idUser);
@@ -160,11 +164,9 @@ public class PostService implements IPostService{
         Post savedPost = postRepository.save(newPost);
 
         try {
-
-
             // Tạo thông báo nếu có người theo dõi
             String message = "Có bài đăng mới từ " + user.getFirstName() + " " + user.getLastName();
-            notificationService.createPost(user, message);
+            notificationService.createPost(user, message , savedPost);
         } catch (Exception e) {
             // Log lỗi nhưng vẫn tiếp tục lưu bài đăng
             System.err.println("Error creating notification: " + e.getMessage());
@@ -178,12 +180,20 @@ public class PostService implements IPostService{
     public void sendNotification(User follower, Notification notification) {
         if (follower != null && notification != null) {
             try {
-                messagingTemplate.convertAndSendToUser(follower.getUsername(), "/notification", notification);
+                // Lấy NotificationRecipient từ repository
+                NotificationRecipient recipient = notificationRecipientRepository.findByNotificationId(notification.getId())
+                        .orElseThrow(() -> new RuntimeException("Notification recipient not found"));
+
+                // Chuyển đổi sang NotificationRecipientDto
+                NotificationRecipientDto recipientDto = NotificationRecipientMapper.map(recipient);
+
+                messagingTemplate.convertAndSendToUser(follower.getUsername(), "/notification", recipientDto);
             } catch (Exception e) {
                 System.err.println("Error sending notification to user " + follower.getUsername() + ": " + e.getMessage());
             }
         }
     }
+
 
     @Override
     public List<PostDto> findByUserId(int idUser) {

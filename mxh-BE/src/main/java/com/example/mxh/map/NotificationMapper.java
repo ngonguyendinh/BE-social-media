@@ -15,6 +15,7 @@ public class NotificationMapper {
     public static NotificationDto map(Notification notification){
         NotificationDto dto = new NotificationDto();
         dto.setId(notification.getId());
+        dto.setNewPost(notification.getNewPost() != null ? PostMapper.map(notification.getNewPost()): null);
         dto.setNotification(notification.getMessage());
         dto.setSender(UserMapper.map(notification.getUser()));
         dto.setReceivedAt(notification.getCreatedAt());

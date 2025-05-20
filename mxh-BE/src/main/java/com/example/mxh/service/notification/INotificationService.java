@@ -1,5 +1,6 @@
 package com.example.mxh.service.notification;
 
+import com.example.mxh.model.post.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.example.mxh.exception.UserException;
@@ -12,10 +13,11 @@ import java.util.List;
 import java.util.Set;
 
 public interface INotificationService {
-    Notification createPost(User user, String message) throws UserException;
+    Notification createPost(User user, String message, Post newPost) throws UserException;
     List<NotificationRecipient> getNotificationsForUser(int userId);
-    NotificationRecipient readNotification(Long id);
+    NotificationRecipient readNotification(Long id, Long recipientId);
     Notification createNotificationLikePost( User postOwner,User liker, String message);
+    Notification createNotificationCommentPost(User postOwner, User commenter, String message);
     Page<NotificationRecipient> getPagedNotificationsForUser(Long userId, Pageable pageable);
     Long countUnreadNotifications(int userId);
     void markAllNotificationsAsRead(int userId);

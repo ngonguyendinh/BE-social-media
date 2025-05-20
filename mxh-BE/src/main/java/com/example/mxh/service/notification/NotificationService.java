@@ -114,6 +114,7 @@ import com.example.mxh.exception.UserException;
 import com.example.mxh.model.notification.Notification;
 import com.example.mxh.model.notification.NotificationRecipient;
 import com.example.mxh.model.notification.NotificationTask;
+import com.example.mxh.model.post.Post;
 import com.example.mxh.model.user.User;
 import com.example.mxh.repository.NotificationRecipientRepository;
 import com.example.mxh.repository.NotificationRepository;
@@ -144,12 +145,13 @@ public class NotificationService implements INotificationService {
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
-    public Notification createPost(User user, String message) throws UserException {
+    public Notification createPost(User user, String message, Post newPost) throws UserException {
         Notification notification = new Notification();
         notification.setMessage(message);
         notification.setUser(user);
+        notification.setNewPost(newPost);
         notification.setType("newPost");
-        notificationRepository.save(notification);
+
         // Lấy danh sách người theo dõi
         Set<User> followers = new HashSet<>();
         if (user.getFollower() != null && !user.getFollower().isEmpty()) {
@@ -183,8 +185,8 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public NotificationRecipient readNotification(Long id) {
-        NotificationRecipient notificationRecipient = notificationRecipientRepository.findByNotificationId(id)
+    public NotificationRecipient readNotification(Long id, Long recipientId) {
+        NotificationRecipient notificationRecipient = notificationRecipientRepository.findByNotificationIdAndRecipientId(id,recipientId)
                 .orElseThrow(() -> new RuntimeException("Notification not found with id: " + id));
         notificationRecipient.setIsRead(true);
         return notificationRecipientRepository.save(notificationRecipient);
@@ -196,6 +198,32 @@ public class NotificationService implements INotificationService {
         notification.setMessage(message);
         notification.setUser(liker);
         notification.setType("like");
+        notificationRepository.save(notification);
+
+        // Tạo thông báo cho chủ bài viết
+        NotificationRecipient recipient = new NotificationRecipient();
+        recipient.setNotification(notification);
+        recipient.setRecipient(postOwner);
+        recipient.setIsRead(false);
+        recipient.setReceivedAt(LocalDateTime.now());
+        NotificationRecipient savedRecipient = notificationRecipientRepository.save(recipient);
+
+        // Tạo nhiệm vụ gửi thông báo
+        NotificationTask task = new NotificationTask(
+                savedRecipient.getId(),
+                Long.valueOf(postOwner.getId()),
+                message
+        );
+        notificationWorkQueu.enqueue(task);
+
+        return notification;
+    }
+    @Override
+    public Notification createNotificationCommentPost(User postOwner, User commenter, String message) {
+        Notification notification = new Notification();
+        notification.setMessage(message);
+        notification.setUser(commenter);
+        notification.setType("comment");
         notificationRepository.save(notification);
 
         // Tạo thông báo cho chủ bài viết

@@ -21,5 +21,6 @@ public interface IUserService {
     UserDto followUser(int id, int idFollower)throws UserException;
     Set<User> findUsersByIds(Set<Integer> following);
     List<UserDto> searchUser(String keySearch);
+
     User findUserByJwt(String jwt) throws UserException;
 }
