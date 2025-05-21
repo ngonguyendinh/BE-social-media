@@ -165,7 +165,7 @@ public class PostService implements IPostService{
 
         try {
             // Tạo thông báo nếu có người theo dõi
-            String message = "Có bài đăng mới từ " + user.getFirstName() + " " + user.getLastName();
+            String message = "Đã đăng bài viết mới";
             notificationService.createPost(user, message , savedPost);
         } catch (Exception e) {
             // Log lỗi nhưng vẫn tiếp tục lưu bài đăng

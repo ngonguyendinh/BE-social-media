@@ -45,13 +45,13 @@ public class CommentController {
                 String message = " đã bình luận bài viết của bạn";
                 try {
                     Notification notification = notificationService.createNotificationCommentPost(post.getUser(), user, message);
-                    NotificationRecipient recipient =  notificationRecipientRepository.findByNotificationId(notification.getId()).get();
-                    NotificationRecipientDto dto = NotificationRecipientMapper.map(recipient);
-                    messagingTemplate.convertAndSendToUser(
-                            post.getUser().getUsername(),
-                            "/notifications",
-                            dto
-                    );
+//                    NotificationRecipient recipient =  notificationRecipientRepository.findByNotificationId(notification.getId()).get();
+//                    NotificationRecipientDto dto = NotificationRecipientMapper.map(recipient);
+//                    messagingTemplate.convertAndSendToUser(
+//                            post.getUser().getUsername(),
+//                            "/notifications",
+//                            dto
+//                    );
                 } catch (Exception e) {
                     System.err.println("Error creating notification: " + e.getMessage());
                 }

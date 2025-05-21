@@ -2,8 +2,6 @@ package com.example.mxh.controller;
 
 import com.example.mxh.exception.UserException;
 import com.example.mxh.form.FormCreatePost;
-import com.example.mxh.map.NotificationMapper;
-import com.example.mxh.map.NotificationRecipientMapper;
 import com.example.mxh.map.PostMapper;
 import com.example.mxh.model.notification.*;
 import com.example.mxh.model.post.Post;
@@ -11,20 +9,16 @@ import com.example.mxh.model.post.PostDto;
 import com.example.mxh.model.user.User;
 import com.example.mxh.repository.NotificationRecipientRepository;
 import com.example.mxh.service.notification.INotificationService;
-import com.example.mxh.service.notification.NotificationWorkQueu;
 import com.example.mxh.service.post.IPostService;
 import com.example.mxh.service.user.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 @RestController
 @RequestMapping("/api/posts")
@@ -34,7 +28,7 @@ public class PostController {
     private IUserService iUserService;
     private SimpMessagingTemplate messagingTemplate;
     private INotificationService notificationService;
-    private NotificationWorkQueu notificationWorkQueu;
+
     private NotificationRecipientRepository notificationRecipientRepository;
     @PostMapping("/user")
     public ResponseEntity<PostDto> createPost(@RequestBody FormCreatePost form,@RequestHeader("Authorization") String jwt) throws UserException {
@@ -121,13 +115,6 @@ public ResponseEntity<String> likePostHandler(@PathVariable("Pid") int postId, @
                 String message = " đã thích bài viết của bạn";
                 try {
                     Notification notification = notificationService.createNotificationLikePost(post.getUser(), user, message);
-                    NotificationRecipient recipient =  notificationRecipientRepository.findByNotificationId(notification.getId()).get();
-                    NotificationRecipientDto dto = NotificationRecipientMapper.map(recipient);
-                    messagingTemplate.convertAndSendToUser(
-                            post.getUser().getUsername(),
-                            "/notifications",
-                            dto
-                    );
                 } catch (Exception e) {
                     System.err.println("Error creating notification: " + e.getMessage());
                 }

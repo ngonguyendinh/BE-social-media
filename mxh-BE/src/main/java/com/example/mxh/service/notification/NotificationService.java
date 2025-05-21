@@ -115,6 +115,7 @@ import com.example.mxh.model.notification.Notification;
 import com.example.mxh.model.notification.NotificationRecipient;
 import com.example.mxh.model.notification.NotificationTask;
 import com.example.mxh.model.post.Post;
+import com.example.mxh.model.reels.Reels;
 import com.example.mxh.model.user.User;
 import com.example.mxh.repository.NotificationRecipientRepository;
 import com.example.mxh.repository.NotificationRepository;
@@ -151,7 +152,7 @@ public class NotificationService implements INotificationService {
         notification.setUser(user);
         notification.setNewPost(newPost);
         notification.setType("newPost");
-
+Notification noti = notificationRepository.save(notification);
         // Lấy danh sách người theo dõi
         Set<User> followers = new HashSet<>();
         if (user.getFollower() != null && !user.getFollower().isEmpty()) {
@@ -176,7 +177,41 @@ public class NotificationService implements INotificationService {
             );
             notificationWorkQueu.enqueue(task);
         }
-        return notificationRepository.save(notification);
+        return noti;
+    }
+    @Override
+    public Notification createNotificationCreateReels(User user, String message) {
+        Notification notification = new Notification();
+        notification.setMessage(message);
+        notification.setUser(user);
+
+        notification.setType("newReels");
+        Notification noti = notificationRepository.save(notification);
+        // Lấy danh sách người theo dõi
+        Set<User> followers = new HashSet<>();
+        if (user.getFollower() != null && !user.getFollower().isEmpty()) {
+            followers = userService.findUsersByIds(user.getFollower());
+        }
+        if (followers == null || followers.isEmpty()) {
+            return notificationRepository.save(notification);
+        }
+        for (User follower : followers) {
+            NotificationRecipient recipient = new NotificationRecipient();
+            recipient.setNotification(notification);
+            recipient.setRecipient(follower);
+            recipient.setIsRead(false);
+            recipient.setReceivedAt(LocalDateTime.now());
+            NotificationRecipient savedRecipient = notificationRecipientRepository.save(recipient);
+
+            // Tạo nhiệm vụ gửi thông báo
+            NotificationTask task = new NotificationTask(
+                    savedRecipient.getId(),
+                    Long.valueOf(follower.getId()),
+                    message
+            );
+            notificationWorkQueu.enqueue(task);
+        }
+        return noti;
     }
 
     @Override
@@ -244,7 +279,24 @@ public class NotificationService implements INotificationService {
 
         return notification;
     }
+    @Override
+    public Notification createNotificationFollowUser(User user, User follower, String message) {
+        Notification notification = new Notification();
+        notification.setMessage(message);
+        notification.setUser(follower);
+        notification.setType("follow");
+        notificationRepository.save(notification);
 
+        // Tạo thông báo cho chủ bài viết
+        NotificationRecipient recipient = new NotificationRecipient();
+        recipient.setNotification(notification);
+        recipient.setRecipient(user);
+        recipient.setIsRead(false);
+        recipient.setReceivedAt(LocalDateTime.now());
+         notificationRecipientRepository.save(recipient);
+
+        return notification;
+    }
     @Override
     public Page<NotificationRecipient> getPagedNotificationsForUser(Long userId, Pageable pageable) {
         return notificationRecipientRepository.findByRecipientId(userId, pageable);
